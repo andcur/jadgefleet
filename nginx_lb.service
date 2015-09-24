@@ -1,0 +1,23 @@
+[Unit]
+Description=Nginx load balancer for Apache backends
+Requires=etcd2.service
+Requires=docker.service
+After=etcd2.service
+After=docker.service
+TimeoutStartSec=0
+KillMode=none
+EnvironmentFile=/etc/environment
+
+ExecStartPre=-/usr/bin/docker kill nginx_lb
+ExecStartPre=-/usr/bin/docker rm nginx_lb
+ExecStartPre=/usr/bin/docker pull andcur/nginx_lb
+ExecStart=/usr/bin/docker run --name nginx_lb -p ${COREOS_PUBLIC_IPV4}:80:80 \
+andcur/nginx_lb /usr/local/bin/confd-watch
+
+ExecStop=/usr/bin/docker stop nginx_lb
+
+[X-Fleet]
+# Don't run on a node already running a load balancer or an Apache backend
+Conflicts=nginx.service
+Conflicts=apache@*.service
+
