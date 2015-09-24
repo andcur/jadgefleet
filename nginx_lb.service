@@ -4,6 +4,8 @@ Requires=etcd2.service
 Requires=docker.service
 After=etcd2.service
 After=docker.service
+
+[Service]
 TimeoutStartSec=0
 KillMode=none
 EnvironmentFile=/etc/environment
