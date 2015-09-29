@@ -29,7 +29,7 @@ ExecStart=/bin/bash -c "\
         /usr/bin/docker run -t --rm mongo:latest \
             mongo $COREOS_PRIVATE_IPV4/admin \
             -u siteRootAdmin -p $SITE_ROOT_PWD \
-            --eval \"rs.status().startupStatus === 3 && rs.initiate();\"; \
+            --eval \"rs.initiate();\"; \
         \
         /usr/bin/sleep 60; \
         echo fix address of first node...; \
