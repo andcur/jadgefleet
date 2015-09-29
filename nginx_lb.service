@@ -9,6 +9,7 @@ After=docker.service
 TimeoutStartSec=0
 KillMode=none
 EnvironmentFile=/etc/environment
+Restart=on-failure
 
 ExecStartPre=-/usr/bin/docker kill nginx_lb
 ExecStartPre=-/usr/bin/docker rm nginx_lb

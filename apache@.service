@@ -13,6 +13,7 @@ Before=apache-discovery@%i.service
 TimeoutStartSec=0
 KillMode=none
 EnvironmentFile=/etc/environment
+Restart=on-failure
 
 ExecStartPre=-/usr/bin/docker kill apache.%i
 ExecStartPre=-/usr/bin/docker rm apache.%i

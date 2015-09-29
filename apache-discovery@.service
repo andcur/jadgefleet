@@ -10,6 +10,7 @@ BindsTo=apache@%i.service
 
 [Service]
 EnvironmentFile=/etc/environment
+Restart=on-failure
 
 ExecStart=/bin/bash -c '\
   while true; do \
