@@ -1,5 +1,6 @@
 [Unit]
-Description=Mongos router
+Description=ReplicaSet Configurator
+BindsTo=rs1@1.service
 
 [Service]
 KillMode=none
