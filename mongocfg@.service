@@ -17,9 +17,9 @@ ExecStart=/bin/bash -c "\
           docker run \
               --rm \
               --name mongocfg \
-              -v /var/mongocfg:/data/configdb \
+              -v /var/mongocfg:/data/db \
               -p 27019:27019 \
-              mongo:latest mongod --configsvr"
+              mongo:latest mongod --configsvr --dbpath /data/db"
 ExecStartPost=/bin/bash -c "\
           set -e; \
           /usr/bin/etcdctl set /mongo/configsvr/nodes/$COREOS_PRIVATE_IPV4/port 27019; \
