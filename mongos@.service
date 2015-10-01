@@ -1,0 +1,32 @@
+[Unit]
+Description=ReplicaSet Configurator
+BindsTo=rs1@1.service
+
+[Service]
+KillMode=none
+TimeoutStartSec=360
+TimeoutStopSec=360
+EnvironmentFile=/etc/environment
+ExecStartPre=/bin/bash -c "/usr/bin/docker pull mongo:latest"
+ExecStart=/bin/bash -c "\
+    set -e; \
+    \
+    echo Checking for available configservers...; \
+    \
+    CFGSERVERS=$(etcdctl ls /mongo/configsvr/nodes | \
+                 grep -v $COREOS_PRIVATE_IPV4 | \
+                 xargs -I{} basename {} | \
+                 xargs -I{} echo \"{}:27019,\"); \
+    \
+    /usr/bin/docker run \
+        --rm \
+        --name mongos \
+        -v /var/mongo:/data/db \
+        -p 27017:27017 \
+        mongo:latest mongos --configdb $CFGSERVERS ; \
+    \
+    echo Router is configured"
+
+Restart=on-failure
+[X-Fleet]
+MachineOf=rs1@1.service
