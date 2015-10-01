@@ -1,0 +1,35 @@
+[Unit]
+Description=mongod service
+After=docker.service
+Requires=docker.service
+After=etcd2.service
+Requires=etcd2.service
+
+[Service]
+KillMode=none
+TimeoutStartSec=0
+TimeoutStopSec=360
+EnvironmentFile=/etc/environment
+Environment=INSTANCE=%i
+ExecStartPre=/bin/bash -c "/usr/bin/docker pull mongo:latest"
+ExecStartPre=-/bin/bash -c "/usr/bin/docker rm -f mongodb"
+ExecStart=/bin/bash -c "\
+          docker run \
+              --rm \
+              --name mongodb \
+              -v /var/mongo:/data/db \
+              -p 27017:27017 \
+              mongo:latest mongod --replSet\"%p\""
+ExecStartPost=/bin/bash -c "\
+          set -e; \
+          /usr/bin/etcdctl set /mongo/%p/nodes/$COREOS_PRIVATE_IPV4/port 27017; \
+          /usr/bin/etcdctl set /mongo/%p/nodes/$COREOS_PRIVATE_IPV4/status on"
+
+ExecStop=/bin/bash -c -v "\
+          /usr/bin/docker stop -t 60 mongodb || true; \
+          /usr/bin/etcdctl set /mongo/%p/nodes/$COREOS_PRIVATE_IPV4/status off"
+Restart=on-failure
+
+[X-Fleet]
+X-Conflicts=%p@*.service
+Conflicts=%p@*.service
