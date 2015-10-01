@@ -19,7 +19,7 @@ ExecStart=/bin/bash -c "\
               --name mongodb \
               -v /var/mongo:/data/db \
               -p 27017:27017 \
-              mongo:latest mongod --replSet\"%p\""
+              mongo:latest mongod --replSet=\"%p\""
 ExecStartPost=/bin/bash -c "\
           set -e; \
           /usr/bin/etcdctl set /mongo/%p/nodes/$COREOS_PRIVATE_IPV4/port 27017; \
