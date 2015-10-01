@@ -31,5 +31,5 @@ ExecStop=/bin/bash -c -v "\
 Restart=on-failure
 
 [X-Fleet]
-X-Conflicts=%p@*.service
-Conflicts=%p@*.service
+Conflicts=mongos@*.service
+Conflicts=rs1@*.service

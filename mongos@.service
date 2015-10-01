@@ -1,6 +1,5 @@
 [Unit]
-Description=ReplicaSet Configurator
-BindsTo=rs1@1.service
+Description=Mongos service
 
 [Service]
 KillMode=none
@@ -29,4 +28,5 @@ ExecStart=/bin/bash -c "\
 
 Restart=on-failure
 [X-Fleet]
-MachineOf=rs1@1.service
+Conflicts=rs1@*.service
+Conflicts=mongocfg@*.service
