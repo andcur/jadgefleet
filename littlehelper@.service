@@ -1,0 +1,26 @@
+[Unit]
+Description=Littlehelper on port %i
+
+Requires=etcd2.service
+Requires=docker.service
+
+After=etcd2.service
+After=docker.service
+
+[Service]
+TimeoutStartSec=0
+KillMode=none
+EnvironmentFile=/etc/environment
+Restart=on-failure
+
+ExecStartPre=-/usr/bin/docker kill littlehelper.%i
+ExecStartPre=-/usr/bin/docker rm littlehelper.%i
+ExecStartPre=/usr/bin/docker pull vtomash/littlehelper
+ExecStart=/usr/bin/docker run --name littlehelper.%i -p ${COREOS_PRIVATE_IPV4}:%i:9000 \
+vtomash/littlehelper /bin/bash -c "sbt run ROUTER=127.0.0.1"
+
+ExecStop=/usr/bin/docker stop littlehelper.%i
+
+[X-Fleet]
+# Don't schedule on same node as other littlehelper instances
+Conflicts=littlehelper@*.service
