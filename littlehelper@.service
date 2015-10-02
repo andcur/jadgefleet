@@ -16,8 +16,8 @@ Restart=on-failure
 ExecStartPre=-/usr/bin/docker kill littlehelper.%i
 ExecStartPre=-/usr/bin/docker rm littlehelper.%i
 ExecStartPre=/usr/bin/docker pull vtomash/littlehelper
-ExecStart=/usr/bin/docker run -ti --name littlehelper.%i -p ${COREOS_PRIVATE_IPV4}:%i:9000 \
-vtomash/littlehelper /bin/bash -c "sbt run"
+ExecStart=/usr/bin/docker run --name littlehelper.%i -p ${COREOS_PRIVATE_IPV4}:%i:9000 \
+-e "ROUTER=${COREOS_PRIVATE_IPV4}" vtomash/littlehelper sbt run
 
 ExecStop=/usr/bin/docker stop littlehelper.%i
 
