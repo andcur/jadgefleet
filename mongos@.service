@@ -29,4 +29,5 @@ ExecStart=/bin/bash -c "\
 Restart=on-failure
 [X-Fleet]
 Conflicts=rs1@*.service
-Conflicts=mongocfg@*.service
+Conflicts=mongocfgsvr@*.service
+MachineOf=littlehelper@*.service
