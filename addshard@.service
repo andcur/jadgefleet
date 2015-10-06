@@ -1,0 +1,28 @@
+[Unit]
+Description=Shard registrator
+BindsTo=%i@1.service
+
+[Service]
+KillMode=none
+TimeoutStartSec=360
+TimeoutStopSec=360
+EnvironmentFile=/etc/environment
+ExecStartPre=/bin/bash -c "/usr/bin/docker pull mongo:latest"
+ExecStart=/bin/bash -c "\
+    set -e; \
+    MONGOS=$(etcdctl ls /services/apache | \
+                    xargs -I{} basename {} | \
+                    xargs -I{} echo {}:27017 | \
+                    head -n 1; \
+    \
+    echo Found mongos, adding shard now; \
+    \
+    /usr/bin/docker run -t --rm mongo:latest \
+        mongo $MONGOS \
+        --eval \"rs.addShard('%i/$COREOS_PRIVATE_IPV4:27017');\"; \
+    echo Shard added ;\
+    exit 0;"
+
+Restart=on-failure
+[X-Fleet]
+MachineOf=%i@1.service

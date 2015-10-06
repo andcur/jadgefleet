@@ -1,0 +1,35 @@
+[Unit]
+Description=mongo config server service
+After=docker.service
+Requires=docker.service
+After=etcd2.service
+Requires=etcd2.service
+
+[Service]
+KillMode=none
+TimeoutStartSec=0
+TimeoutStopSec=360
+EnvironmentFile=/etc/environment
+Environment=INSTANCE=%i
+ExecStartPre=/bin/bash -c "/usr/bin/docker pull mongo:latest"
+ExecStartPre=-/bin/bash -c "/usr/bin/docker rm -f mongocfg"
+ExecStart=/bin/bash -c "\
+          docker run \
+              --rm \
+              --name mongocfg \
+              -v /var/mongocfg:/data/db \
+              -p 27019:27019 \
+              mongo:latest mongod --configsvr --dbpath /data/db"
+ExecStartPost=/bin/bash -c "\
+          set -e; \
+          /usr/bin/etcdctl set /mongo/configsvr/nodes/$COREOS_PRIVATE_IPV4/port 27019; \
+          /usr/bin/etcdctl set /mongo/configsvr/nodes/$COREOS_PRIVATE_IPV4/status on"
+
+ExecStop=/bin/bash -c -v "\
+          /usr/bin/docker stop -t 60 mongodb || true; \
+          /usr/bin/etcdctl set /mongo/configsvr/nodes/$COREOS_PRIVATE_IPV4/status off"
+Restart=on-failure
+
+[X-Fleet]
+Conflicts=mongos@*.service
+Conflicts=rs1@*.service
