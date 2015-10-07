@@ -12,11 +12,12 @@ ExecStart=/bin/bash -c "\
     \
     echo Checking for available configservers...; \
     \
-    CFGSERVERS=$(etcdctl ls /mongo/configsvr/nodes | \
-                 grep -v $COREOS_PRIVATE_IPV4 | \
-                 xargs -I{} basename {} | \
-                 xargs -I{} echo \"{}:27019,\"); \
-    \
+    TEMP_STR=""; \
+    for ip in `/usr/bin/etcdctl ls /mongo/configsvr/nodes | xargs -I{} basename {}` ; \
+    do \
+        TEMP_STR="$TEMP_STR$ip:27019,"; \
+    done; \
+    CFGSERVERS=$(echo $TEMP_STR | sed \'$s/.$//\'); \
     /usr/bin/docker run \
         --rm \
         --name mongos \
@@ -29,5 +30,7 @@ ExecStart=/bin/bash -c "\
 Restart=on-failure
 [X-Fleet]
 Conflicts=rs1@*.service
+Conflicts=rs2@*.service
+Conflicts=mongos@*.service
 Conflicts=mongocfgsvr@*.service
 MachineOf=littlehelper@*.service

@@ -1,6 +1,6 @@
 [Unit]
 Description=Littlehelper on port %i
-BindsTo=mongos@%i.service
+BindsTo=mongos@1.service
 
 Requires=etcd2.service
 Requires=docker.service
@@ -25,4 +25,4 @@ ExecStop=/usr/bin/docker stop littlehelper.%i
 [X-Fleet]
 # Don't schedule on same node as other littlehelper instances
 Conflicts=littlehelper@*.service
-MachineOf=mongos@*.service
+MachineOf=mongos@1.service
