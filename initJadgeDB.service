@@ -16,14 +16,14 @@ ExecStart=/bin/bash -c "\
         \
         echo Found mongos, inserting Jadge data; \
         \
-        /usr/bin/docker run -t --rm mongo_prop \
+        /usr/bin/docker run -t --rm andcur/mongo_prop \
             -v /root:/data/db \
             mongo $MONGOS /data/db/dbSetupScript.js ; \
         echo Data added ;\
         \
         echo Enabling sharding on Jadge data; \
         \
-        /usr/bin/docker run -t --rm mongo_prop \
+        /usr/bin/docker run -t --rm andcur/mongo_prop \
             mongo $MONGOS \
             --eval \"sh.enableSharding(\"JADGe\");\"; \
         \
@@ -31,7 +31,7 @@ ExecStart=/bin/bash -c "\
         \
         echo Setting shardkey for JADGe.objects; \
         \
-        /usr/bin/docker run -t --rm mongo_prop \
+        /usr/bin/docker run -t --rm andcur/mongo_prop \
             mongo $MONGOS \
             --eval \"sh.shardCollection(\"JADGe.objects\", {\"_id\": 1});\"; \
         \
@@ -39,7 +39,7 @@ ExecStart=/bin/bash -c "\
         \
         echo Setting shardkey for JADGe.dungeons; \
         \
-        /usr/bin/docker run -t --rm mongo_prop \
+        /usr/bin/docker run -t --rm andcur/mongo_prop \
             mongo $MONGOS \
             --eval \"sh.shardCollection(\"JADGe.dungeons\", {\"_id\": 1});\"; \
         \
