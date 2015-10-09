@@ -26,6 +26,14 @@ ExecStart=/bin/bash -c "\
         mongo:latest mongos --configdb $CFGSERVERS ; \
     \
     echo Router is configured"
+ExecStartPost=/bin/bash -c "\
+    set -e; \
+    /usr/bin/etcdctl set /mongo/mongos/nodes/$COREOS_PRIVATE_IPV4/port 27019; \
+    /usr/bin/etcdctl set /mongo/mongos/nodes/$COREOS_PRIVATE_IPV4/status on"
+
+ExecStop=/bin/bash -c -v "\
+    /usr/bin/docker stop -t 60 mongodb || true; \
+    /usr/bin/etcdctl set /mongo/mongos/nodes/$COREOS_PRIVATE_IPV4/status off"
 
 Restart=on-failure
 [X-Fleet]
@@ -33,4 +41,3 @@ Conflicts=rs1@*.service
 Conflicts=rs2@*.service
 Conflicts=mongos@*.service
 Conflicts=mongocfgsvr@*.service
-MachineOf=littlehelper@*.service
