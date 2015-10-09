@@ -10,7 +10,7 @@ EnvironmentFile=/etc/environment
 ExecStartPre=/bin/bash -c "/usr/bin/docker pull mongo:latest"
 ExecStart=/bin/bash -c "\
     set -e; \
-    MONGOS=$(etcdctl ls /services/littlehelpers | \
+    MONGOS=$(etcdctl ls /mongo/mongos/nodes | \
                     xargs -I{} basename {} | \
                     xargs -I{} echo {}:27017 | \
                     head -n 1); \
