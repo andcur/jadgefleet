@@ -1,14 +1,12 @@
 [Unit]
 Description=Init Basic Jadge data
-BindsTo=%i@1.service
 
 [Service]
 KillMode=none
 TimeoutStartSec=360
 TimeoutStopSec=360
 EnvironmentFile=/etc/environment
-ExecStartPre=/bin/bash -c "/usr/bin/docker pull mongo:latest"
-ExecStartPre=/bin/bash -c "/usr/bin/cp ~/jadgefleet/dbSetupScript.js /var/mongo/"
+ExecStartPre=/bin/bash -c "/usr/bin/docker pull andcur/mongo_prop"
 ExecStart=/bin/bash -c "\
         set -e; \
         MONGOS=$(etcdctl ls /mongo/mongos/nodes | \
@@ -18,36 +16,34 @@ ExecStart=/bin/bash -c "\
         \
         echo Found mongos, inserting Jadge data; \
         \
-        /usr/bin/docker run -t --rm mongo:latest \
-            -v /var/mongo:/data/db
+        /usr/bin/docker run -t --rm mongo_prop \
+            -v /root:/data/db
             mongo $MONGOS /data/db/dbSetupScript.js ; \
         echo Data added ;\
         \
         echo Enabling sharding on Jadge data; \
         \
-        /usr/bin/docker run -t --rm mongo:latest \
+        /usr/bin/docker run -t --rm mongo_prop \
             mongo $MONGOS \
-            --eval \"rs.enableSharding(\"JADGe\");\"; \
+            --eval \"sh.enableSharding(\"JADGe\");\"; \
         \
         /usr/bin/sleep 5; \
         \
         echo Setting shardkey for JADGe.objects; \
         \
-        /usr/bin/docker run -t --rm mongo:latest \
+        /usr/bin/docker run -t --rm mongo_prop \
             mongo $MONGOS \
-            --eval \"rs.shardCollection(\"JADGe.objects\", {\"_id\": 1});\"; \
+            --eval \"sh.shardCollection(\"JADGe.objects\", {\"_id\": 1});\"; \
         \
         /usr/bin/sleep 5; \
         \
         echo Setting shardkey for JADGe.dungeons; \
         \
-        /usr/bin/docker run -t --rm mongo:latest \
+        /usr/bin/docker run -t --rm mongo_prop \
             mongo $MONGOS \
-            --eval \"rs.shardCollection(\"JADGe.dungeons\", {\"_id\": 1});\"; \
+            --eval \"sh.shardCollection(\"JADGe.dungeons\", {\"_id\": 1});\"; \
         \
-        echo Replica is configured ;\
+        echo Sharding and data are configured ;\
         exit 0;"
 
 Restart=on-failure
-[X-Fleet]
-MachineOf=%i@1.service
