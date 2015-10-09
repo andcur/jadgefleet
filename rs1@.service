@@ -13,6 +13,7 @@ EnvironmentFile=/etc/environment
 Environment=INSTANCE=%i
 ExecStartPre=/bin/bash -c "/usr/bin/docker pull mongo:latest"
 ExecStartPre=-/bin/bash -c "/usr/bin/docker rm -f mongodb"
+ExecStartPre=-/bin/bash -c "/usr/bin/rm -rf /var/mongo/*"
 ExecStart=/bin/bash -c "\
           docker run \
               --rm \
@@ -31,5 +32,7 @@ ExecStop=/bin/bash -c -v "\
 Restart=on-failure
 
 [X-Fleet]
-X-Conflicts=%p@*.service
 Conflicts=%p@*.service
+Conflicts=%p@*.service
+Conflicts=littlehelper@*.service
+Conflicts=mongocfgsvr@*.service
