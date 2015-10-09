@@ -17,7 +17,7 @@ ExecStart=/bin/bash -c "\
         echo Found mongos, inserting Jadge data; \
         \
         /usr/bin/docker run -t --rm mongo_prop \
-            -v /root:/data/db
+            -v /root:/data/db \
             mongo $MONGOS /data/db/dbSetupScript.js ; \
         echo Data added ;\
         \
