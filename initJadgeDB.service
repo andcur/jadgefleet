@@ -16,9 +16,11 @@ ExecStart=/bin/bash -c "\
         \
         echo Found mongos, inserting Jadge data; \
         \
-        /usr/bin/docker run -t --rm andcur/mongo_prop \
+        /usr/bin/docker run \
+            --rm \
+            --name mongo_prop \
             -v /root:/data/db \
-            mongo $MONGOS /data/db/dbSetupScript.js ; \
+            andcur/mongo_prop mongo $MONGOS /data/db/dbSetupScript.js ; \
         echo Data added ;\
         \
         echo Enabling sharding on Jadge data; \
