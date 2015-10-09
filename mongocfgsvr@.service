@@ -33,3 +33,4 @@ Restart=on-failure
 [X-Fleet]
 Conflicts=mongos@*.service
 Conflicts=rs1@*.service
+Conflicts=rs2@*.service
