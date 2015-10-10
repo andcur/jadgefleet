@@ -19,7 +19,7 @@ ExecStart=/bin/bash -c "\
     \
     /usr/bin/docker run -t --rm mongo:latest \
         mongo $MONGOS \
-        --eval \"rs.addShard('%i/$COREOS_PRIVATE_IPV4:27017');\"; \
+        --eval \"sh.addShard('%i/$COREOS_PRIVATE_IPV4:27017');\"; \
     echo Shard added ;\
     exit 0;"
 
