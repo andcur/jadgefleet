@@ -19,15 +19,14 @@ ExecStart=/bin/bash -c "\
         /usr/bin/docker run \
             --rm \
             --name mongo_prop \
-            -v /root:/data/db \
-            andcur/mongo_prop mongo $MONGOS /data/db/dbSetupScript.js ; \
+            andcur/mongo_prop mongo $MONGOS /root/dbSetupScript.js ; \
         echo Data added ;\
         \
         echo Enabling sharding on Jadge data; \
         \
         /usr/bin/docker run -t --rm andcur/mongo_prop \
             mongo $MONGOS \
-            --eval \"sh.enableSharding(\"JADGe\");\"; \
+            --eval \"sh.enableSharding('JADGe');\"; \
         \
         /usr/bin/sleep 5; \
         \
@@ -35,7 +34,7 @@ ExecStart=/bin/bash -c "\
         \
         /usr/bin/docker run -t --rm andcur/mongo_prop \
             mongo $MONGOS \
-            --eval \"sh.shardCollection(\"JADGe.objects\", {\"_id\": 1});\"; \
+            --eval \"sh.shardCollection('JADGe.objects', {'_id': 1});\"; \
         \
         /usr/bin/sleep 5; \
         \
@@ -43,7 +42,7 @@ ExecStart=/bin/bash -c "\
         \
         /usr/bin/docker run -t --rm andcur/mongo_prop \
             mongo $MONGOS \
-            --eval \"sh.shardCollection(\"JADGe.dungeons\", {\"_id\": 1});\"; \
+            --eval \"sh.shardCollection('JADGe.dungeons', {'_id': 1});\"; \
         \
         echo Sharding and data are configured ;\
         exit 0;"
