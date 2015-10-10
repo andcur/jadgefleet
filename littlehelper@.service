@@ -1,6 +1,6 @@
 [Unit]
-Description=Littlehelper on port %i
-BindsTo=mongos@*.service
+Description=Littlehelper %i
+BindsTo=mongos@%i.service
 
 Requires=etcd2.service
 Requires=docker.service
@@ -17,7 +17,7 @@ Restart=on-failure
 ExecStartPre=-/usr/bin/docker kill littlehelper.%i
 ExecStartPre=-/usr/bin/docker rm littlehelper.%i
 ExecStartPre=/usr/bin/docker pull vtomash/littlehelper
-ExecStart=/usr/bin/docker run --name littlehelper.%i -p ${COREOS_PRIVATE_IPV4}:%i:9000 \
+ExecStart=/usr/bin/docker run --name littlehelper.%i -p ${COREOS_PRIVATE_IPV4}:80:9000 \
 -e "ROUTER=${COREOS_PRIVATE_IPV4}" vtomash/littlehelper target/universal/stage/bin/littlehelper
 
 ExecStop=/usr/bin/docker stop littlehelper.%i
@@ -25,4 +25,4 @@ ExecStop=/usr/bin/docker stop littlehelper.%i
 [X-Fleet]
 # Don't schedule on same node as other littlehelper instances
 Conflicts=littlehelper@*.service
-MachineOf=mongos@*.service
+MachineOf=mongos@%i.service
