@@ -1,5 +1,5 @@
 [Unit]
-Description=Back-end on port %i etcd registration
+Description=Back-end %i etcd registration
 
 Requires=etcd2.service
 Requires=littlehelper@%i.service
@@ -14,9 +14,9 @@ Restart=on-failure
 
 ExecStart=/bin/bash -c '\
   while true; do \
-    curl -f ${COREOS_PRIVATE_IPV4}:%i; \
+    curl -f ${COREOS_PRIVATE_IPV4}:80; \
     if [ $? -eq 0 ]; then \
-      etcdctl set /services/littlehelpers/${COREOS_PRIVATE_IPV4} \'${COREOS_PRIVATE_IPV4}:%i\' --ttl 30; \
+      etcdctl set /services/littlehelpers/${COREOS_PRIVATE_IPV4} \'${COREOS_PRIVATE_IPV4}:80\' --ttl 30; \
     else \
       etcdctl rm /services/littlehelpers/${COREOS_PRIVATE_IPV4}; \
     fi; \
