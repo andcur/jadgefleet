@@ -29,7 +29,6 @@ ExecStartPost=/bin/bash -c "\
 ExecStop=/bin/bash -c -v "\
           /usr/bin/docker stop -t 60 mongodb || true; \
           /usr/bin/etcdctl set /mongo/%p/nodes/$COREOS_PRIVATE_IPV4/status off"
-Restart=on-failure
 
 [X-Fleet]
 Conflicts=%p@*.service
